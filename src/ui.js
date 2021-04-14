@@ -24,6 +24,7 @@ export default class Ui {
       imageContainer: make('div', [ this.CSS.imageContainer ]),
       fileButton: this.createFileButton(),
       imageEl: undefined,
+      mobileImageEl: undefined,
       imagePreloader: make('div', this.CSS.imagePreloader),
       caption: make('div', [this.CSS.input, this.CSS.caption], {
         contentEditable: !this.readOnly,
@@ -66,6 +67,7 @@ export default class Ui {
       imageContainer: 'image-tool__image',
       imagePreloader: 'image-tool__image-preloader',
       imageEl: 'image-tool__image-picture',
+      mobileImageEl: 'image-tool__image-mobile-picture',
       caption: 'image-tool__caption',
     };
   };
@@ -210,6 +212,77 @@ export default class Ui {
     });
 
     this.nodes.imageContainer.appendChild(this.nodes.imageEl);
+  }
+
+  /**
+   * Shows an image
+   *
+   * @param {string} url - image source
+   * @returns {void}
+   */
+  fillMobileImage(url) {
+    /**
+     * Check for a source extension to compose element correctly: video tag for mp4, img — for others
+     */
+    const tag = /\.mp4$/.test(url) ? 'VIDEO' : 'IMG';
+
+    const attributes = {
+      src: url,
+    };
+
+    /**
+     * We use eventName variable because IMG and VIDEO tags have different event to be called on source load
+     * - IMG: load
+     * - VIDEO: loadeddata
+     *
+     * @type {string}
+     */
+    let eventName = 'load';
+
+    /**
+     * Update attributes and eventName if source is a mp4 video
+     */
+    if (tag === 'VIDEO') {
+      /**
+       * Add attributes for playing muted mp4 as a gif
+       *
+       * @type {boolean}
+       */
+      attributes.autoplay = true;
+      attributes.loop = true;
+      attributes.muted = true;
+      attributes.playsinline = true;
+
+      /**
+       * Change event to be listened
+       *
+       * @type {string}
+       */
+      eventName = 'loadeddata';
+    }
+
+    /**
+     * Compose tag with defined attributes
+     *
+     * @type {Element}
+     */
+    this.nodes.mobileImageEl = make(tag, this.CSS.mobileImageEl, attributes);
+
+    /**
+     * Add load event listener
+     */
+    this.nodes.mobileImageEl.addEventListener(eventName, () => {
+      this.toggleStatus(Ui.status.FILLED);
+
+      /**
+       * Preloader does not exists on first rendering with presaved data
+       */
+      if (this.nodes.imagePreloader) {
+        this.nodes.imagePreloader.style.backgroundImage = '';
+      }
+    });
+    console.log(this.nodes.mobileImageEl);
+    this.nodes.imageContainer.appendChild(this.nodes.mobileImageEl);
   }
 
   /**

@@ -14,6 +14,12 @@
       display: block;
     }
 
+    &-mobile-picture {
+      max-width: 100%;
+      vertical-align: bottom;
+      display: block;
+    }
+
     &-preloader {
       width: 50px;
       height: 50px;

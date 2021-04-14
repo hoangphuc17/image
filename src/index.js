@@ -296,6 +296,7 @@ export default class ImageTool {
    */
   set data(data) {
     this.image = data.file;
+    this.mobileImage = data.mobileFile;
 
     this._data.caption = data.caption || '';
     this.ui.fillCaption(this._data.caption);
@@ -330,6 +331,21 @@ export default class ImageTool {
 
     if (file && file.url) {
       this.ui.fillImage(file.url);
+    }
+  }
+
+  /**
+   * Set new image file
+   *
+   * @private
+   *
+   * @param {object} file - uploaded file data
+   */
+  set mobileImage(mobileFile) {
+    this._data.mobileFile = mobileFile || {};
+
+    if (mobileFile && mobileFile.url) {
+      this.ui.fillMobileImage(mobileFile.url);
     }
   }
 
